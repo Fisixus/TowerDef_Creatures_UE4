@@ -1,10 +1,12 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Utku Erden 2021
 
 
-#include "Test.h"
+#include "Move.h"
+#include "GameFramework/Actor.h"
+
 
 // Sets default values for this component's properties
-UTest::UTest()
+UMove::UMove()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -15,17 +17,19 @@ UTest::UTest()
 
 
 // Called when the game starts
-void UTest::BeginPlay()
+void UMove::BeginPlay()
 {
 	Super::BeginPlay();
+	FVector pos = GetOwner()->GetActorLocation();
 
+	GetOwner()->SetActorLocation(pos + FVector(280.f,0.f, 0.f));
 	// ...
 	
 }
 
 
 // Called every frame
-void UTest::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UMove::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
