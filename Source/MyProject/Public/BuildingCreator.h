@@ -6,6 +6,14 @@
 #include "Components/ActorComponent.h"
 #include "BuildingCreator.generated.h"
 
+UENUM()
+enum MarkerType
+{
+	Cube	UMETA(DisplayName = "Cube"),
+	Sphere  UMETA(DisplayName = "Sphere"),
+	Capsule UMETA(DisplayName = "Capsule"),
+	None	UMETA(DisplayName = "None")
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MYPROJECT_API UBuildingCreator : public UActorComponent
@@ -24,25 +32,18 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	UFUNCTION(BlueprintCallable)
-	bool GetIsCubeBuildingSelected();
+	MarkerType GetWhichBuildingIsSelected();
 	UFUNCTION(BlueprintCallable)
-	void SetIsCubeBuildingSelected(bool situation);
+	void SetCubeBuilding();
 	UFUNCTION(BlueprintCallable)
-	bool GetIsSphereBuildingSelected();
+	void SetSphereBuilding();
 	UFUNCTION(BlueprintCallable)
-	void SetIsSphereBuildingSelected(bool situation);
+	void SetCapsuleBuilding();
 	UFUNCTION(BlueprintCallable)
-	bool GetIsCapsuleBuildingSelected();
-	UFUNCTION(BlueprintCallable)
-	void SetIsCapsuleBuildingSelected(bool situation);
+	void TraceGround();
 
 
 private:
-	UPROPERTY(EditAnywhere)
-	bool isCubeBuildingSelected = false;
-	UPROPERTY(EditAnywhere)
-	bool isSphereBuildingSelected = false;
-	UPROPERTY(EditAnywhere)
-	bool isCapsuleBuildingSelected = false;
-	
+	UPROPERTY(EditAnywhere, Category=MarkerType)
+	TEnumAsByte<MarkerType> markerType;
 };

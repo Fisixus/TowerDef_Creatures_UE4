@@ -11,9 +11,9 @@
 #define printFString(text, fstring) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, FString::Printf(TEXT(text), fstring))
 #define OUT
 
+
+
 APlayerController* inputController;
-float mouseX;
-float mouseY;
 FVector mousePos;
 FVector mouseRot;
 
@@ -40,100 +40,80 @@ void UBuildingCreator::BeginPlay()
 	// ...
 }
 
-bool UBuildingCreator::GetIsCubeBuildingSelected()
+MarkerType UBuildingCreator::GetWhichBuildingIsSelected()
 {
-	return isCubeBuildingSelected;
+	return markerType;
 }
 
-void UBuildingCreator::SetIsCubeBuildingSelected(bool situation)
+void UBuildingCreator::SetCubeBuilding()
 {
-	isCubeBuildingSelected = situation;
-	isCapsuleBuildingSelected = false;
-	isSphereBuildingSelected = false;
+	markerType = Cube;
 }
 
-bool UBuildingCreator::GetIsSphereBuildingSelected()
+
+void UBuildingCreator::SetSphereBuilding()
 {
-	return isSphereBuildingSelected;
+	markerType = Sphere;
 }
 
-void UBuildingCreator::SetIsSphereBuildingSelected(bool situation)
+
+void UBuildingCreator::SetCapsuleBuilding()
 {
-	isSphereBuildingSelected = situation;
-	isCapsuleBuildingSelected = false;
-	isCubeBuildingSelected = false;
+	markerType = Capsule;
 }
 
-bool UBuildingCreator::GetIsCapsuleBuildingSelected()
+void UBuildingCreator::TraceGround()
 {
-	return isCapsuleBuildingSelected;
-}
+	FVector playerViewPointLoc;
+	FRotator playerViewPointRot;
 
-void UBuildingCreator::SetIsCapsuleBuildingSelected(bool situation)
-{
-	isCapsuleBuildingSelected = situation;
-	isSphereBuildingSelected = false;
-	isCubeBuildingSelected = false;
+	inputController->GetPlayerViewPoint
+	(OUT playerViewPointLoc,
+		OUT playerViewPointRot
+	);
+
+	inputController->DeprojectMousePositionToWorld(OUT mousePos, OUT mouseRot);
+	mousePos = mousePos + mouseRot * 10000.f;
+	//UE_LOG(LogTemp, Error, TEXT("Pos:%s"), *(mousePos.ToString()));
+	DrawDebugLine
+	(
+		GetWorld(),
+		playerViewPointLoc,
+		mousePos,
+		FColor(255, 0, 0),
+		false,
+		0.f,
+		0.f,
+		5.f
+	);
+	FCollisionQueryParams TraceParams(FName(""), false, GetOwner());
+	FHitResult hit;
+	GetWorld()->LineTraceSingleByObjectType(
+		OUT hit,
+		playerViewPointLoc,
+		mousePos,
+		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
+		TraceParams
+	);
+
+	AActor* actorHit = hit.GetActor();
+	if (actorHit)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("HitName:%s"), *(actorHit->GetName()));
+	}
 }
 
 // Called every frame
 void UBuildingCreator::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	FVector playerViewPointLoc;
-	FRotator playerViewPointRot;
-	
-	inputController->GetPlayerViewPoint
-	(OUT playerViewPointLoc,
-	 OUT playerViewPointRot
-	);
 
-	
 	if (inputController->IsInputKeyDown(EKeys::RightMouseButton)) {
-		isCapsuleBuildingSelected = false;
-		isSphereBuildingSelected = false;
-		isCubeBuildingSelected = false;
+		markerType = None;
 		UE_LOG(LogTemp, Error, TEXT("Nothing is selected!"));
 	}
 	
-	if (isCubeBuildingSelected) 
-	{
-		inputController->DeprojectMousePositionToWorld(OUT mousePos, OUT mouseRot);
-		mousePos = mousePos + mouseRot * 10000.f;
-		//UE_LOG(LogTemp, Error, TEXT("Pos:%s"), *(mousePos.ToString()));
-		DrawDebugLine
-		(
-			GetWorld(),
-			playerViewPointLoc,
-			mousePos,
-			FColor(255, 0, 0),
-			false,
-			0.f,
-			0.f,
-			5.f
-		);
-		FCollisionQueryParams TraceParams(FName(""), false, GetOwner());
-		FHitResult hit;
-		GetWorld()->LineTraceSingleByObjectType(
-			OUT hit,
-			playerViewPointLoc,
-			mousePos,
-			FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
-			TraceParams
-		);
-
-		AActor* actorHit = hit.GetActor();
-		if(actorHit)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("HitName:%s"), *(actorHit->GetName()));
-		}
-	}
-	else if (isSphereBuildingSelected) {
-
-	}
-
-	else if (isCapsuleBuildingSelected) {
-
-	}
+	if(markerType != None)
+		TraceGround();
 }
 
