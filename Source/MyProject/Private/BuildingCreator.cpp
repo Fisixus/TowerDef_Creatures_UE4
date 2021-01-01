@@ -4,9 +4,18 @@
 #include "GameFramework/Actor.h"
 #include "GameFramework/PlayerController.h"
 #include "Engine/World.h"	
+#include "Components/PrimitiveComponent.h"
 #include "BuildingCreator.h"
 
+
+#define printFString(text, fstring) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, FString::Printf(TEXT(text), fstring))
 #define OUT
+
+APlayerController* inputController;
+float mouseX;
+float mouseY;
+FVector mousePos;
+FVector mouseRot;
 
 // Sets default values for this component's properties
 UBuildingCreator::UBuildingCreator()
@@ -23,11 +32,23 @@ UBuildingCreator::UBuildingCreator()
 void UBuildingCreator::BeginPlay()
 {
 	Super::BeginPlay();
+	inputController = GetWorld()->GetFirstPlayerController();
+	inputController->bEnableClickEvents = true;
+	inputController->bShowMouseCursor = true;
 
+	//TODO: Change it to pawn => inputController->BindAction("MouseLeftClicked", IE_Pressed, this, &BuildingCreator::MyFunction);
 	// ...
-	
 }
 
+bool UBuildingCreator::GetIsCubeBuildingSelected()
+{
+	return isCubeBuildingSelected;
+}
+
+void UBuildingCreator::SetIsCubeBuildingSelected(bool situation)
+{
+	isCubeBuildingSelected = situation;
+}
 
 // Called every frame
 void UBuildingCreator::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -35,23 +56,48 @@ void UBuildingCreator::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	FVector playerViewPointLoc;
 	FRotator playerViewPointRot;
-	// ...
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint
+	
+	inputController->GetPlayerViewPoint
 	(OUT playerViewPointLoc,
 	 OUT playerViewPointRot
 	);
-	//UE_LOG(LogTemp, Warning, TEXT("Location:%s, Rotation:%s"), *playerViewPointLoc.ToString(), *playerViewPointRot.ToString());
-	FVector lineTraceEnd = playerViewPointLoc + GetOwner()->GetActorForwardVector() * 10000.f;
-	DrawDebugLine
-	(
-		GetWorld(),
-		playerViewPointLoc,
-		lineTraceEnd,
-		FColor(255,0,0),
-		false,
-		0.f,
-		0.f,
-		5.f
-	);
+
+	/*
+	if (inputController->IsInputKeyDown(EKeys::LeftMouseButton)) {
+		UE_LOG(LogTemp, Warning, TEXT("Clicked!"));
+	}
+	*/
+	if (isCubeBuildingSelected) 
+	{
+		inputController->DeprojectMousePositionToWorld(OUT mousePos, OUT mouseRot);
+		mousePos = mousePos + mouseRot * 10000.f;
+		//UE_LOG(LogTemp, Error, TEXT("Pos:%s"), *(mousePos.ToString()));
+		DrawDebugLine
+		(
+			GetWorld(),
+			playerViewPointLoc,
+			mousePos,
+			FColor(255, 0, 0),
+			false,
+			0.f,
+			0.f,
+			5.f
+		);
+		FCollisionQueryParams TraceParams(FName(""), false, GetOwner());
+		FHitResult hit;
+		GetWorld()->LineTraceSingleByObjectType(
+			OUT hit,
+			playerViewPointLoc,
+			mousePos,
+			FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
+			TraceParams
+		);
+
+		AActor* actorHit = hit.GetActor();
+		if(actorHit)
+		{
+			UE_LOG(LogTemp, Error, TEXT("HitName:%s"), *(actorHit->GetName()));
+		}
+	}
 }
 

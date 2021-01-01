@@ -23,6 +23,14 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	UFUNCTION(BlueprintCallable)
+	bool GetIsCubeBuildingSelected();
+	UFUNCTION(BlueprintCallable)
+	void SetIsCubeBuildingSelected(bool situation);
 
-		
+
+private:
+	UPROPERTY(EditAnywhere)
+	bool isCubeBuildingSelected = false;
+	
 };
