@@ -27,10 +27,22 @@ public:
 	bool GetIsCubeBuildingSelected();
 	UFUNCTION(BlueprintCallable)
 	void SetIsCubeBuildingSelected(bool situation);
+	UFUNCTION(BlueprintCallable)
+	bool GetIsSphereBuildingSelected();
+	UFUNCTION(BlueprintCallable)
+	void SetIsSphereBuildingSelected(bool situation);
+	UFUNCTION(BlueprintCallable)
+	bool GetIsCapsuleBuildingSelected();
+	UFUNCTION(BlueprintCallable)
+	void SetIsCapsuleBuildingSelected(bool situation);
 
 
 private:
 	UPROPERTY(EditAnywhere)
 	bool isCubeBuildingSelected = false;
+	UPROPERTY(EditAnywhere)
+	bool isSphereBuildingSelected = false;
+	UPROPERTY(EditAnywhere)
+	bool isCapsuleBuildingSelected = false;
 	
 };

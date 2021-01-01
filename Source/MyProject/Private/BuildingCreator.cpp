@@ -48,6 +48,32 @@ bool UBuildingCreator::GetIsCubeBuildingSelected()
 void UBuildingCreator::SetIsCubeBuildingSelected(bool situation)
 {
 	isCubeBuildingSelected = situation;
+	isCapsuleBuildingSelected = false;
+	isSphereBuildingSelected = false;
+}
+
+bool UBuildingCreator::GetIsSphereBuildingSelected()
+{
+	return isSphereBuildingSelected;
+}
+
+void UBuildingCreator::SetIsSphereBuildingSelected(bool situation)
+{
+	isSphereBuildingSelected = situation;
+	isCapsuleBuildingSelected = false;
+	isCubeBuildingSelected = false;
+}
+
+bool UBuildingCreator::GetIsCapsuleBuildingSelected()
+{
+	return isCapsuleBuildingSelected;
+}
+
+void UBuildingCreator::SetIsCapsuleBuildingSelected(bool situation)
+{
+	isCapsuleBuildingSelected = situation;
+	isSphereBuildingSelected = false;
+	isCubeBuildingSelected = false;
 }
 
 // Called every frame
@@ -62,11 +88,14 @@ void UBuildingCreator::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	 OUT playerViewPointRot
 	);
 
-	/*
-	if (inputController->IsInputKeyDown(EKeys::LeftMouseButton)) {
-		UE_LOG(LogTemp, Warning, TEXT("Clicked!"));
+	
+	if (inputController->IsInputKeyDown(EKeys::RightMouseButton)) {
+		isCapsuleBuildingSelected = false;
+		isSphereBuildingSelected = false;
+		isCubeBuildingSelected = false;
+		UE_LOG(LogTemp, Error, TEXT("Nothing is selected!"));
 	}
-	*/
+	
 	if (isCubeBuildingSelected) 
 	{
 		inputController->DeprojectMousePositionToWorld(OUT mousePos, OUT mouseRot);
@@ -96,8 +125,15 @@ void UBuildingCreator::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		AActor* actorHit = hit.GetActor();
 		if(actorHit)
 		{
-			UE_LOG(LogTemp, Error, TEXT("HitName:%s"), *(actorHit->GetName()));
+			UE_LOG(LogTemp, Warning, TEXT("HitName:%s"), *(actorHit->GetName()));
 		}
+	}
+	else if (isSphereBuildingSelected) {
+
+	}
+
+	else if (isCapsuleBuildingSelected) {
+
 	}
 }
 
