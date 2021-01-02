@@ -14,6 +14,7 @@
 
 
 APlayerController* inputController;
+AActor* markerActor;
 FVector mousePos;
 FVector mouseRot;
 
@@ -35,7 +36,12 @@ void UBuildingCreator::BeginPlay()
 	inputController = GetWorld()->GetFirstPlayerController();
 	inputController->bEnableClickEvents = true;
 	inputController->bShowMouseCursor = true;
-
+	markerActor = Cast<AActor>(markerObj);
+	if (markerActor != nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Name:%s"), *(markerActor->GetName()));
+	}
+	
 	//TODO: Change it to pawn => inputController->BindAction("MouseLeftClicked", IE_Pressed, this, &BuildingCreator::MyFunction);
 	// ...
 }
@@ -45,21 +51,21 @@ MarkerType UBuildingCreator::GetWhichBuildingIsSelected()
 	return markerType;
 }
 
-void UBuildingCreator::SetCubeBuilding()
+void UBuildingCreator::SetAsCubeBuilding()
 {
 	markerType = Cube;
 }
 
 
-void UBuildingCreator::SetSphereBuilding()
+void UBuildingCreator::SetAsCylinderBuilding()
 {
-	markerType = Sphere;
+	markerType = Cylinder;
 }
 
 
-void UBuildingCreator::SetCapsuleBuilding()
+void UBuildingCreator::SetAsConeBuilding()
 {
-	markerType = Capsule;
+	markerType = Cone;
 }
 
 void UBuildingCreator::TraceGround()
@@ -75,6 +81,7 @@ void UBuildingCreator::TraceGround()
 	inputController->DeprojectMousePositionToWorld(OUT mousePos, OUT mouseRot);
 	mousePos = mousePos + mouseRot * 10000.f;
 	//UE_LOG(LogTemp, Error, TEXT("Pos:%s"), *(mousePos.ToString()));
+	/*
 	DrawDebugLine
 	(
 		GetWorld(),
@@ -86,20 +93,32 @@ void UBuildingCreator::TraceGround()
 		0.f,
 		5.f
 	);
+	*/
 	FCollisionQueryParams TraceParams(FName(""), false, GetOwner());
 	FHitResult hit;
 	GetWorld()->LineTraceSingleByObjectType(
 		OUT hit,
 		playerViewPointLoc,
 		mousePos,
-		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
+		FCollisionObjectQueryParams(ECollisionChannel::ECC_GameTraceChannel1),
 		TraceParams
 	);
 
 	AActor* actorHit = hit.GetActor();
 	if (actorHit)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("HitName:%s"), *(actorHit->GetName()));
+		if(actorHit->GetName().Contains("AllowedArea", ESearchCase::IgnoreCase, ESearchDir::FromStart))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("HitName:%s"), *(actorHit->GetName()));
+			//TODO: markerObj green
+		}
+		else 
+		{
+			//TODO: markerObj red
+		}
+		FVector markerPos = hit.Location;
+		markerActor->SetActorLocation(FVector(markerPos.X, markerPos.Y, 0.2f));
+		
 	}
 }
 

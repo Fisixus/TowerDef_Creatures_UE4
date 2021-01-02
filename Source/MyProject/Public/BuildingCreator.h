@@ -10,8 +10,8 @@ UENUM()
 enum MarkerType
 {
 	Cube	UMETA(DisplayName = "Cube"),
-	Sphere  UMETA(DisplayName = "Sphere"),
-	Capsule UMETA(DisplayName = "Capsule"),
+	Cylinder  UMETA(DisplayName = "Cylinder"),
+	Cone UMETA(DisplayName = "Cone"),
 	None	UMETA(DisplayName = "None")
 };
 
@@ -34,11 +34,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	MarkerType GetWhichBuildingIsSelected();
 	UFUNCTION(BlueprintCallable)
-	void SetCubeBuilding();
+	void SetAsCubeBuilding();
 	UFUNCTION(BlueprintCallable)
-	void SetSphereBuilding();
+	void SetAsCylinderBuilding();
 	UFUNCTION(BlueprintCallable)
-	void SetCapsuleBuilding();
+	void SetAsConeBuilding();
 	UFUNCTION(BlueprintCallable)
 	void TraceGround();
 
@@ -46,4 +46,6 @@ public:
 private:
 	UPROPERTY(EditAnywhere, Category=MarkerType)
 	TEnumAsByte<MarkerType> markerType;
+	UPROPERTY(EditAnywhere, Category = "SceneObjects")
+	UObject* markerObj;
 };
