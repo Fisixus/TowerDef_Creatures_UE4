@@ -8,15 +8,9 @@
 #include "BuildingCreator.h"
 
 
+
 #define printFString(text, fstring) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, FString::Printf(TEXT(text), fstring))
 #define OUT
-
-
-
-APlayerController* inputController;
-AActor* markerActor;
-FVector mousePos;
-FVector mouseRot;
 
 // Sets default values for this component's properties
 UBuildingCreator::UBuildingCreator()
@@ -40,10 +34,24 @@ void UBuildingCreator::BeginPlay()
 	if (markerActor != nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Name:%s"), *(markerActor->GetName()));
+		markerMesh = markerActor->FindComponentByClass<UStaticMeshComponent>();
+		HideMarker();
 	}
 	
 	//TODO: Change it to pawn => inputController->BindAction("MouseLeftClicked", IE_Pressed, this, &BuildingCreator::MyFunction);
 	// ...
+}
+
+void UBuildingCreator::ShowMarker()
+{
+	//markerMesh->SetVisibility(true, true);
+	markerActor->SetActorHiddenInGame(false);
+}
+
+void UBuildingCreator::HideMarker()
+{
+	//markerMesh->SetVisibility(false, true);
+	markerActor->SetActorHiddenInGame(true);
 }
 
 MarkerType UBuildingCreator::GetWhichBuildingIsSelected()
@@ -53,19 +61,23 @@ MarkerType UBuildingCreator::GetWhichBuildingIsSelected()
 
 void UBuildingCreator::SetAsCubeBuilding()
 {
+	//UE_LOG(LogTemp, Error, TEXT("SA!!"));
 	markerType = Cube;
+	ShowMarker();
 }
 
 
 void UBuildingCreator::SetAsCylinderBuilding()
 {
 	markerType = Cylinder;
+	ShowMarker();
 }
 
 
 void UBuildingCreator::SetAsConeBuilding()
 {
 	markerType = Cone;
+	ShowMarker();
 }
 
 void UBuildingCreator::TraceGround()
@@ -130,9 +142,12 @@ void UBuildingCreator::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	if (inputController->IsInputKeyDown(EKeys::RightMouseButton)) {
 		markerType = None;
 		UE_LOG(LogTemp, Error, TEXT("Nothing is selected!"));
+		HideMarker();
 	}
 	
 	if(markerType != None)
+	{
 		TraceGround();
+	}
 }
 

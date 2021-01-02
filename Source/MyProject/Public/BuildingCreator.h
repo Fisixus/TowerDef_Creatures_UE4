@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "BuildingCreator.generated.h"
 
 UENUM()
@@ -41,6 +42,10 @@ public:
 	void SetAsConeBuilding();
 	UFUNCTION(BlueprintCallable)
 	void TraceGround();
+	UFUNCTION(BlueprintCallable)
+	void ShowMarker();
+	UFUNCTION(BlueprintCallable)
+	void HideMarker();
 
 
 private:
@@ -48,4 +53,9 @@ private:
 	TEnumAsByte<MarkerType> markerType;
 	UPROPERTY(EditAnywhere, Category = "SceneObjects")
 	UObject* markerObj;
+	APlayerController* inputController;
+	AActor* markerActor;
+	FVector mousePos;
+	FVector mouseRot;
+	UStaticMeshComponent* markerMesh;
 };
