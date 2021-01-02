@@ -46,6 +46,8 @@ public:
 	void ShowMarker();
 	UFUNCTION(BlueprintCallable)
 	void HideMarker();
+	UFUNCTION(BlueprintCallable)
+	void ChangeMarkerColor(FLinearColor newColor);
 
 
 private:
@@ -58,4 +60,5 @@ private:
 	FVector mousePos;
 	FVector mouseRot;
 	UStaticMeshComponent* markerMesh;
+	UMaterialInstanceDynamic* markerMat;
 };

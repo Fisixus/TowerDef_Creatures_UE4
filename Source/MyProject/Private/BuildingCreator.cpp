@@ -35,11 +35,20 @@ void UBuildingCreator::BeginPlay()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Name:%s"), *(markerActor->GetName()));
 		markerMesh = markerActor->FindComponentByClass<UStaticMeshComponent>();
+		markerMat = UMaterialInstanceDynamic::Create(markerMesh->GetMaterial(0), NULL);
 		HideMarker();
+		ChangeMarkerColor(FLinearColor(1.f, 0.f, 0.f, 0.75f));
 	}
 	
 	//TODO: Change it to pawn => inputController->BindAction("MouseLeftClicked", IE_Pressed, this, &BuildingCreator::MyFunction);
 	// ...
+}
+
+void UBuildingCreator::ChangeMarkerColor(FLinearColor newColor)
+{
+	markerMat->SetVectorParameterValue(FName(TEXT("MainColor")), newColor);
+	//markerMat->SetScalarParameterValue(FName(TEXT("MainColor")),1.f);
+	markerMesh->SetMaterial(0, markerMat);
 }
 
 void UBuildingCreator::ShowMarker()
@@ -122,11 +131,11 @@ void UBuildingCreator::TraceGround()
 		if(actorHit->GetName().Contains("AllowedArea", ESearchCase::IgnoreCase, ESearchDir::FromStart))
 		{
 			UE_LOG(LogTemp, Warning, TEXT("HitName:%s"), *(actorHit->GetName()));
-			//TODO: markerObj green
+			ChangeMarkerColor(FLinearColor(0.f, 1.f, 0.f, 0.75f));
 		}
 		else 
 		{
-			//TODO: markerObj red
+			ChangeMarkerColor(FLinearColor(1.f, 0.f, 0.f, 0.75f));
 		}
 		FVector markerPos = hit.Location;
 		markerActor->SetActorLocation(FVector(markerPos.X, markerPos.Y, 0.2f));
