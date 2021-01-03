@@ -12,6 +12,7 @@
 #define printFString(text, fstring) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, FString::Printf(TEXT(text), fstring))
 #define OUT
 
+
 // Sets default values for this component's properties
 UBuildingCreator::UBuildingCreator()
 {
@@ -27,21 +28,27 @@ UBuildingCreator::UBuildingCreator()
 void UBuildingCreator::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	inputController = GetWorld()->GetFirstPlayerController();
 	inputController->bEnableClickEvents = true;
 	inputController->bShowMouseCursor = true;
 	markerActor = Cast<AActor>(markerObj);
 	if (markerActor != nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Name:%s"), *(markerActor->GetName()));
+		//UE_LOG(LogTemp, Warning, TEXT("Name:%s"), *(markerActor->GetName()));
 		markerMesh = markerActor->FindComponentByClass<UStaticMeshComponent>();
 		markerMat = UMaterialInstanceDynamic::Create(markerMesh->GetMaterial(0), NULL);
 		HideMarker();
 		ChangeMarkerColor(FLinearColor(1.f, 0.f, 0.f, 0.75f));
 	}
-	
-	//TODO: Change it to pawn => inputController->BindAction("MouseLeftClicked", IE_Pressed, this, &BuildingCreator::MyFunction);
-	// ...
+	//TODO: !!! Why UInputComponent in here is not worked, unless BP_Default_Pawn is working
+}
+
+void UBuildingCreator::CancelBuildingCallback()
+{
+	markerType = None;
+	UE_LOG(LogTemp, Error, TEXT("Nothing is selected!"));
+	HideMarker();
 }
 
 void UBuildingCreator::ChangeMarkerColor(FLinearColor newColor)
@@ -130,7 +137,7 @@ void UBuildingCreator::TraceGround()
 	{
 		if(actorHit->GetName().Contains("AllowedArea", ESearchCase::IgnoreCase, ESearchDir::FromStart))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("HitName:%s"), *(actorHit->GetName()));
+			//UE_LOG(LogTemp, Warning, TEXT("HitName:%s"), *(actorHit->GetName()));
 			ChangeMarkerColor(FLinearColor(0.f, 1.f, 0.f, 0.75f));
 		}
 		else 
@@ -147,13 +154,14 @@ void UBuildingCreator::TraceGround()
 void UBuildingCreator::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	if (inputController->IsInputKeyDown(EKeys::RightMouseButton)) {
+	/*
+	if (inputController->IsInputKeyDown(EKeys::SpaceBar)) 
+	{
 		markerType = None;
 		UE_LOG(LogTemp, Error, TEXT("Nothing is selected!"));
 		HideMarker();
 	}
-	
+	*/
 	if(markerType != None)
 	{
 		TraceGround();

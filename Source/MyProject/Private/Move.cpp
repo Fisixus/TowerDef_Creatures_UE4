@@ -20,13 +20,13 @@ UMove::UMove()
 void UMove::BeginPlay()
 {
 	Super::BeginPlay();
+
 	FVector pos = GetOwner()->GetActorLocation();
 
 	GetOwner()->SetActorLocation(pos + FVector(280.f,0.f, 0.f));
 	// ...
 	
 }
-
 
 // Called every frame
 void UMove::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

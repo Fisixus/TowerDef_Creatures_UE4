@@ -4,17 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Move.generated.h"
+#include "BuildingCreator.h"
+#include "InputManager.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class MYPROJECT_API UMove : public UActorComponent
+class MYPROJECT_API UInputManager : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UMove();
+	UInputManager();
 
 protected:
 	// Called when the game starts
@@ -23,5 +24,9 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	UFUNCTION(BlueprintCallable)
+	void InvokeCancelBuilding();
+private:
+	AActor* buildingCreatorActor;
 		
 };
