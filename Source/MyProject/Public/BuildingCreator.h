@@ -16,6 +16,8 @@ enum MarkerType
 	None	UMETA(DisplayName = "None")
 };
 
+class ABuildingBase;
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MYPROJECT_API UBuildingCreator : public UActorComponent
 {
@@ -50,6 +52,10 @@ public:
 	void ChangeMarkerColor(FLinearColor newColor);
 	UFUNCTION(BlueprintCallable)
 	void CancelBuildingCallback();
+	UFUNCTION(BlueprintCallable)
+	void ConstructBuildingCallback();
+	UFUNCTION(BlueprintCallable)
+	void Construct(AActor* building);
 
 
 private:
@@ -64,4 +70,13 @@ private:
 	UStaticMeshComponent* markerMesh;
 	UMaterialInstanceDynamic* markerMat;
 	UInputComponent* inputComponent = nullptr;
+	bool isMarkerInAllowedArea = false;
+	FVector markerPos;
+	UPROPERTY(EditAnywhere, Category = "Buildings")
+	TSubclassOf<AActor> cubeBuilding;
+	UPROPERTY(EditAnywhere, Category = "Buildings")
+	TSubclassOf<AActor> cylinderBuilding;
+	UPROPERTY(EditAnywhere, Category = "Buildings")
+	TSubclassOf<AActor> coneBuilding;
+
 };

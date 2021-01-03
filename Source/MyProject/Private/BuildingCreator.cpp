@@ -41,6 +41,7 @@ void UBuildingCreator::BeginPlay()
 		HideMarker();
 		ChangeMarkerColor(FLinearColor(1.f, 0.f, 0.f, 0.75f));
 	}
+
 	//TODO: !!! Why UInputComponent in here is not worked, unless BP_Default_Pawn is working
 }
 
@@ -49,6 +50,44 @@ void UBuildingCreator::CancelBuildingCallback()
 	markerType = None;
 	UE_LOG(LogTemp, Error, TEXT("Nothing is selected!"));
 	HideMarker();
+}
+
+void UBuildingCreator::ConstructBuildingCallback()
+{
+	if(markerType != None && isMarkerInAllowedArea)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Construction complete!"));
+		/*
+		UStaticMeshComponent* mesh;
+		TSubobjectPtr<UBoxComponent> Cube1;
+		Cube1 = ObjectInitializer.CreateDefaultSubobject<USkeletalMeshComponent>(this, TEXT("Cube"));
+		Cube1->bHiddenInGame = false;
+		RootComponent = Cube1;
+		GetWorld()->SpawnActor(ACube::StaticClass());*/
+		AActor* building;
+
+		switch (markerType)
+		{
+			case Cube:
+				building = GetWorld()->SpawnActor<AActor>(cubeBuilding, markerActor->GetActorLocation(), markerActor->GetActorRotation());
+				break;
+			case Cylinder:
+				building = GetWorld()->SpawnActor<AActor>(cylinderBuilding, markerActor->GetActorLocation(), markerActor->GetActorRotation());
+				break;
+			case Cone:
+				building = GetWorld()->SpawnActor<AActor>(coneBuilding, markerActor->GetActorLocation(), markerActor->GetActorRotation());
+				break;
+			default:
+				break;
+		}
+		//Construct(building);
+		HideMarker();
+	}
+}
+
+void UBuildingCreator::Construct(AActor* building)
+{
+	
 }
 
 void UBuildingCreator::ChangeMarkerColor(FLinearColor newColor)
@@ -68,6 +107,7 @@ void UBuildingCreator::HideMarker()
 {
 	//markerMesh->SetVisibility(false, true);
 	markerActor->SetActorHiddenInGame(true);
+	isMarkerInAllowedArea = false;
 }
 
 MarkerType UBuildingCreator::GetWhichBuildingIsSelected()
@@ -139,12 +179,14 @@ void UBuildingCreator::TraceGround()
 		{
 			//UE_LOG(LogTemp, Warning, TEXT("HitName:%s"), *(actorHit->GetName()));
 			ChangeMarkerColor(FLinearColor(0.f, 1.f, 0.f, 0.75f));
+			isMarkerInAllowedArea = true;
 		}
 		else 
 		{
 			ChangeMarkerColor(FLinearColor(1.f, 0.f, 0.f, 0.75f));
+			isMarkerInAllowedArea = false;
 		}
-		FVector markerPos = hit.Location;
+		markerPos = hit.Location;
 		markerActor->SetActorLocation(FVector(markerPos.X, markerPos.Y, 0.2f));
 		
 	}

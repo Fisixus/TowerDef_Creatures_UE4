@@ -40,6 +40,14 @@ void UInputManager::BeginPlay()
 			this, // The object instance that is going to react to the input
 			&UInputManager::InvokeCancelBuilding // The function that will fire when input is received
 		);
+
+		inputComponent->BindAction
+		(
+			"ConstructBuilding", // The input binding (specified in DefaultInput.ini)
+			IE_Pressed, // React when button pressed (or on release, etc., if desired)
+			this, // The object instance that is going to react to the input
+			&UInputManager::InvokeConstructBuilding // The function that will fire when input is received
+		);
 	}
 	// ...
 	
@@ -56,9 +64,16 @@ void UInputManager::InvokeCancelBuilding()
 	if (buildingCreatorActor)
 	{
 		buildingCreatorActor->FindComponentByClass<UBuildingCreator>()->CancelBuildingCallback();
-		UE_LOG(LogTemp, Error, TEXT("ASAS"));
 	}
 
+}
+
+void UInputManager::InvokeConstructBuilding()
+{
+	if (buildingCreatorActor)
+	{
+		buildingCreatorActor->FindComponentByClass<UBuildingCreator>()->ConstructBuildingCallback();
+	}
 }
 
 
