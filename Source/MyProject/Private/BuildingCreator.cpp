@@ -56,7 +56,7 @@ void UBuildingCreator::ConstructBuildingCallback()
 {
 	if(markerType != None && isMarkerInAllowedArea)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Construction complete!"));
+		
 		/*
 		UStaticMeshComponent* mesh;
 		TSubobjectPtr<UBoxComponent> Cube1;
@@ -69,25 +69,48 @@ void UBuildingCreator::ConstructBuildingCallback()
 		switch (markerType)
 		{
 			case Cube:
-				building = GetWorld()->SpawnActor<AActor>(cubeBuilding, markerActor->GetActorLocation(), markerActor->GetActorRotation());
+				building = GetWorld()->SpawnActor<AActor>(cubeBuilding, FVector(markerActor->GetActorLocation().X, markerActor->GetActorLocation().Y, -616.f), markerActor->GetActorRotation());
 				break;
 			case Cylinder:
-				building = GetWorld()->SpawnActor<AActor>(cylinderBuilding, markerActor->GetActorLocation(), markerActor->GetActorRotation());
+				building = GetWorld()->SpawnActor<AActor>(cylinderBuilding, FVector(markerActor->GetActorLocation().X, markerActor->GetActorLocation().Y, -616.f), markerActor->GetActorRotation());
 				break;
 			case Cone:
-				building = GetWorld()->SpawnActor<AActor>(coneBuilding, markerActor->GetActorLocation(), markerActor->GetActorRotation());
+				building = GetWorld()->SpawnActor<AActor>(coneBuilding, FVector(markerActor->GetActorLocation().X, markerActor->GetActorLocation().Y, -616.f), markerActor->GetActorRotation());
 				break;
 			default:
+				building = nullptr;
 				break;
 		}
-		//Construct(building);
+		Construct(building);
 		HideMarker();
 	}
 }
 
 void UBuildingCreator::Construct(AActor* building)
 {
-	
+	//TODO: Smooth construct
+	//Z to +600
+	UFunction* Func = building->FindFunction(TEXT("RiseBuilding"));
+	if (Func == nullptr) { return; }
+	FStructOnScope FuncParam(Func);
+	/*
+	UProperty* ReturnProp = nullptr;
+
+	for (TFieldIterator<UProperty> It(Func); It; ++It)
+	{
+		UProperty* Prop = *It;
+		if (Prop->HasAnyPropertyFlags(CPF_ReturnParm))
+		{
+			ReturnProp = Prop;
+		}
+		else
+		{
+			//FillParam here            
+		}
+	}
+	*/
+	building->ProcessEvent(Func, FuncParam.GetStructMemory());
+	UE_LOG(LogTemp, Error, TEXT("Construction complete!"));
 }
 
 void UBuildingCreator::ChangeMarkerColor(FLinearColor newColor)
