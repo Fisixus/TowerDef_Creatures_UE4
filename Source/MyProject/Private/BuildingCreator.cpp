@@ -81,6 +81,7 @@ void UBuildingCreator::ConstructBuildingCallback()
 				building = nullptr;
 				break;
 		}
+		building->AttachToActor(buildingsParentActor, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true));
 		Construct(building);
 		HideMarker();
 	}

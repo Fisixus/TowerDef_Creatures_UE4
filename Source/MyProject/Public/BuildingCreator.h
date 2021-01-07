@@ -63,6 +63,8 @@ private:
 	TEnumAsByte<MarkerType> markerType;
 	UPROPERTY(EditAnywhere, Category = "SceneObjects")
 	UObject* markerObj;
+	//UPROPERTY(EditAnywhere, Category = "SceneObjects")
+	//UObject* buildingParentObj;
 	APlayerController* inputController;
 	AActor* markerActor;
 	FVector mousePos;
@@ -72,6 +74,8 @@ private:
 	UInputComponent* inputComponent = nullptr;
 	bool isMarkerInAllowedArea = false;
 	FVector markerPos;
+	UPROPERTY(EditAnywhere, Category = "Buildings")
+	AActor* buildingsParentActor;
 	UPROPERTY(EditAnywhere, Category = "Buildings")
 	TSubclassOf<AActor> cubeBuilding;
 	UPROPERTY(EditAnywhere, Category = "Buildings")
