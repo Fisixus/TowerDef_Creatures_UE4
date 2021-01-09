@@ -19,7 +19,18 @@ UBuildingCreator::UBuildingCreator()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
+	/*
+	UPointLightComponent* PointLight1 = CreateDefaultSubobject<UPointLightComponent>(TEXT("PointLight1"));
+	PointLight1->Intensity = 3000.0f;
+	//PointLight1->bVisible = true;
+	USceneComponent* RootComponent = PointLight1;
 
+	USphereComponent*  Sphere1 = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere1"));
+	Sphere1->InitSphereRadius(250.0f);
+	Sphere1->SetupAttachment(RootComponent);
+	Sphere1->OnComponentBeginOverlap.AddDynamic(this, &UBuildingCreator::OnOverlapBegin);
+	*/
+	
 	// ...
 }
 
@@ -35,14 +46,29 @@ void UBuildingCreator::BeginPlay()
 	markerActor = Cast<AActor>(markerObj);
 	if (markerActor != nullptr)
 	{
+		markerTrigger = markerActor->FindComponentByClass<UBoxComponent>();
 		//UE_LOG(LogTemp, Warning, TEXT("Name:%s"), *(markerActor->GetName()));
+		markerTrigger->OnComponentBeginOverlap.AddDynamic(this, &UBuildingCreator::OnOverlapBegin);
+		markerTrigger->OnComponentEndOverlap.AddDynamic(this, &UBuildingCreator::OnOverlapEnd);
 		markerMesh = markerActor->FindComponentByClass<UStaticMeshComponent>();
 		markerMat = UMaterialInstanceDynamic::Create(markerMesh->GetMaterial(0), NULL);
 		HideMarker();
 		ChangeMarkerColor(FLinearColor(1.f, 0.f, 0.f, 0.75f));
 	}
-
+	
 	//TODO: !!! Why UInputComponent in here is not worked, unless BP_Default_Pawn is working
+}
+
+void UBuildingCreator::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	//UE_LOG(LogTemp, Warning, TEXT("Overlapped!"));
+	totalIntersectedBuildings++;
+}
+
+void UBuildingCreator::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	//UE_LOG(LogTemp, Warning, TEXT("Overlap End!"));
+	totalIntersectedBuildings--;
 }
 
 void UBuildingCreator::CancelBuildingCallback()
@@ -56,7 +82,7 @@ void UBuildingCreator::ConstructBuildingCallback()
 {
 	if(markerType != None && isMarkerInAllowedArea)
 	{
-		
+		HideMarker();
 		/*
 		UStaticMeshComponent* mesh;
 		TSubobjectPtr<UBoxComponent> Cube1;
@@ -83,7 +109,7 @@ void UBuildingCreator::ConstructBuildingCallback()
 		}
 		building->AttachToActor(buildingsParentActor, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true));
 		Construct(building);
-		HideMarker();
+		
 	}
 }
 
@@ -111,6 +137,7 @@ void UBuildingCreator::Construct(AActor* building)
 	}
 	*/
 	building->ProcessEvent(Func, FuncParam.GetStructMemory());
+	markerType = None;
 	UE_LOG(LogTemp, Error, TEXT("Construction complete!"));
 }
 
@@ -125,11 +152,14 @@ void UBuildingCreator::ShowMarker()
 {
 	//markerMesh->SetVisibility(true, true);
 	markerActor->SetActorHiddenInGame(false);
+	markerTrigger->SetGenerateOverlapEvents(true);
 }
 
 void UBuildingCreator::HideMarker()
 {
 	//markerMesh->SetVisibility(false, true);
+	//markerActor->FindComponentByClass<UBoxComponent>()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	markerTrigger->SetGenerateOverlapEvents(false);
 	markerActor->SetActorHiddenInGame(true);
 	isMarkerInAllowedArea = false;
 }
@@ -202,8 +232,16 @@ void UBuildingCreator::TraceGround()
 		if(actorHit->GetName().Contains("AllowedArea", ESearchCase::IgnoreCase, ESearchDir::FromStart))
 		{
 			//UE_LOG(LogTemp, Warning, TEXT("HitName:%s"), *(actorHit->GetName()));
-			ChangeMarkerColor(FLinearColor(0.f, 1.f, 0.f, 0.75f));
-			isMarkerInAllowedArea = true;
+			if(totalIntersectedBuildings == 0)
+			{
+				ChangeMarkerColor(FLinearColor(0.f, 1.f, 0.f, 0.75f));
+				isMarkerInAllowedArea = true;
+			}
+			else 
+			{
+				ChangeMarkerColor(FLinearColor(1.f, 0.f, 0.f, 0.75f));
+				isMarkerInAllowedArea = false;
+			}
 		}
 		else 
 		{
