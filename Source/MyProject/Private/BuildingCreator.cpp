@@ -1,6 +1,7 @@
 // Copyright Utku Erden 2021
 
 #include "DrawDebugHelpers.h"
+#include <Runtime\Engine\Classes\Kismet\GameplayStatics.h>
 #include "GameFramework/Actor.h"
 #include "GameFramework/PlayerController.h"
 #include "Engine/World.h"	
@@ -108,6 +109,7 @@ void UBuildingCreator::ConstructBuildingCallback()
 				break;
 		}
 		building->AttachToActor(buildingsParentActor, FAttachmentTransformRules(EAttachmentRule::KeepRelative, true));
+		UGameplayStatics::SpawnEmitterAtLocation(this, buildingParticle, markerActor->GetActorLocation());
 		Construct(building);
 		
 	}

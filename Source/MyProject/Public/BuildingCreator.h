@@ -89,5 +89,7 @@ private:
 	TSubclassOf<AActor> cylinderBuilding;
 	UPROPERTY(EditAnywhere, Category = "Buildings")
 	TSubclassOf<AActor> coneBuilding;
+	UPROPERTY(EditAnywhere, Category = "Effects")
+	UParticleSystem* buildingParticle;
 
 };
