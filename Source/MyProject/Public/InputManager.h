@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "CoreMinimal.h"
 #include "BuildingCreator.h"
 #include "InputManager.generated.h"
 
@@ -28,6 +28,8 @@ public:
 	void InvokeCancelBuilding();
 	UFUNCTION(BlueprintCallable)
 	void InvokeConstructBuilding();
+	UFUNCTION(BlueprintCallable)
+	void InvokeRotateCam();
 private:
 	AActor* buildingCreatorActor;
 		
