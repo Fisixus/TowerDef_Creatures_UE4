@@ -249,7 +249,7 @@ void UBuildingCreator::TraceGround()
 			isMarkerInAllowedArea = false;
 		}
 		markerPos = hit.Location;
-		markerActor->SetActorLocation(FVector(markerPos.X, markerPos.Y, 0.2f));
+		markerActor->SetActorLocation(FVector(markerPos.X, markerPos.Y, 0.3f));
 		
 	}
 }
